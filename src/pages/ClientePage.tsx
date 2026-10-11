@@ -16,7 +16,7 @@ export function ClientePage({ nome, driveUrl }: Entrega) {
   }, [nome, ano])
 
   return (
-    <Stage>
+    <Stage brilhos>
       <m.p variants={revelar} className="text-[0.7rem] font-semibold uppercase tracking-[0.32em] text-berry-600">
         Ensaio de Natal · {ano}
       </m.p>

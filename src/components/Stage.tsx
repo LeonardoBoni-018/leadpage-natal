@@ -5,7 +5,15 @@ import { siteConfig } from '../config'
 import { Snowfall } from './Snowfall'
 
 /** Fundo verde com brilhos e neve + cartão nude centralizado */
-export function Stage({ children, assinatura = true }: { children: ReactNode; assinatura?: boolean }) {
+export function Stage({
+  children,
+  assinatura = true,
+  brilhos = false,
+}: {
+  children: ReactNode
+  assinatura?: boolean
+  brilhos?: boolean
+}) {
   return (
     <LazyMotion features={domAnimation} strict>
       <MotionConfig reducedMotion="user">
@@ -23,6 +31,7 @@ export function Stage({ children, assinatura = true }: { children: ReactNode; as
             className="pointer-events-none absolute -right-40 top-1/3 size-[26rem] rounded-full bg-pine-600/30 blur-3xl"
           />
           <Snowfall />
+          {brilhos && <Snowfall brilhos />}
 
           <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-xl flex-col items-center justify-center px-4 py-10 sm:py-16">
             <m.article
