@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react'
 
-interface Flake {
+type Tipo = 'neve' | 'rubi' | 'ouro'
+
+interface Particula {
+  tipo: Tipo
   x: number
   y: number
   r: number
@@ -9,8 +12,40 @@ interface Flake {
   alpha: number
 }
 
-/** Neve leve em canvas (ou, com `brilhos`, brilhos vermelhos natalinos caindo). Fica estática para quem prefere menos movimento. */
-export function Snowfall({ brilhos = false }: { brilhos?: boolean }) {
+const CORES: Record<Tipo, [string, string, string]> = {
+  neve: ['rgba(255,255,255,1)', 'rgba(255,250,242,0.85)', 'rgba(255,250,242,0)'],
+  rubi: ['rgba(255,214,214,1)', 'rgba(255,60,75,0.9)', 'rgba(200,15,35,0)'],
+  ouro: ['rgba(255,250,225,1)', 'rgba(244,205,120,0.9)', 'rgba(212,170,90,0)'],
+}
+
+/** Sprite pré-renderizado: núcleo claro + halo suave. Evita shadowBlur, que pesa no celular. */
+function criarSprite(tipo: Tipo) {
+  const c = document.createElement('canvas')
+  c.width = c.height = 64
+  const g = c.getContext('2d')
+  if (g) {
+    const [a, b, d] = CORES[tipo]
+    const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32)
+    grad.addColorStop(0, a)
+    grad.addColorStop(tipo === 'neve' ? 0.3 : 0.2, b)
+    grad.addColorStop(1, d)
+    g.fillStyle = grad
+    g.fillRect(0, 0, 64, 64)
+    if (tipo === 'ouro') {
+      // cintilação em cruz
+      g.fillStyle = 'rgba(255,248,220,0.95)'
+      g.fillRect(31, 6, 2, 52)
+      g.fillRect(6, 31, 52, 2)
+    }
+  }
+  return c
+}
+
+/**
+ * Neve em canvas. Com `festa`, o canvas fica por cima do cartão e mistura neve brilhante
+ * com cintilações vermelhas e douradas. Respeita "reduzir movimento" e pausa com a aba oculta.
+ */
+export function Snowfall({ festa = false }: { festa?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -19,51 +54,39 @@ export function Snowfall({ brilhos = false }: { brilhos?: boolean }) {
     if (!canvas || !ctx) return
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const sprites = { neve: criarSprite('neve'), rubi: criarSprite('rubi'), ouro: criarSprite('ouro') }
     let w = 0
     let h = 0
     let raf = 0
-    let flakes: Flake[] = []
+    let particulas: Particula[] = []
 
-    // Brilho vermelho pré-renderizado (halo suave + núcleo claro), reaproveitado em todas as partículas
-    const sprite = document.createElement('canvas')
-    sprite.width = sprite.height = 64
-    const sctx = sprite.getContext('2d')
-    if (sctx) {
-      const g = sctx.createRadialGradient(32, 32, 0, 32, 32, 32)
-      g.addColorStop(0, 'rgba(255, 214, 214, 1)')
-      g.addColorStop(0.18, 'rgba(255, 70, 80, 0.95)')
-      g.addColorStop(0.5, 'rgba(210, 25, 45, 0.35)')
-      g.addColorStop(1, 'rgba(190, 10, 30, 0)')
-      sctx.fillStyle = g
-      sctx.fillRect(0, 0, 64, 64)
+    const sortearTipo = (): Tipo => {
+      if (!festa) return 'neve'
+      const s = Math.random()
+      return s < 0.5 ? 'neve' : s < 0.78 ? 'rubi' : 'ouro'
     }
 
-    const criar = (topo: boolean): Flake => {
-      const r = brilhos ? 3 + Math.random() * 6 : 0.6 + Math.random() * 2.2
+    const criar = (topo: boolean): Particula => {
+      const tipo = sortearTipo()
+      const r = tipo === 'neve' ? (festa ? 1.5 + Math.random() * 3.5 : 0.6 + Math.random() * 2.2) : 2.5 + Math.random() * 4.5
       return {
+        tipo,
         x: Math.random() * w,
-        y: topo ? -10 : Math.random() * h,
+        y: topo ? -20 : Math.random() * h,
         r,
-        vy: brilhos ? 0.35 + Math.random() * 0.7 : 0.15 + r * 0.28,
+        vy: festa ? 0.4 + Math.random() * 0.9 : 0.15 + r * 0.28,
         phase: Math.random() * Math.PI * 2,
-        alpha: 0.25 + Math.random() * 0.55,
+        alpha: 0.4 + Math.random() * 0.5,
       }
     }
 
-    const desenhar = (tempo = 0) => {
+    const desenhar = (t: number) => {
       ctx.clearRect(0, 0, w, h)
-      for (const f of flakes) {
-        if (brilhos) {
-          // Cintilar: o brilho pulsa suavemente
-          const pulso = 0.65 + 0.35 * Math.sin(tempo / 500 + f.phase * 3)
-          ctx.globalAlpha = f.alpha * pulso
-          ctx.drawImage(sprite, f.x - f.r * 2, f.y - f.r * 2, f.r * 4, f.r * 4)
-          continue
-        }
-        ctx.beginPath()
-        ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(255, 249, 240, ${f.alpha})`
-        ctx.fill()
+      for (const p of particulas) {
+        const cintila = p.tipo === 'neve' ? 1 : 0.55 + 0.45 * Math.sin(t / 380 + p.phase * 3)
+        ctx.globalAlpha = (festa ? p.alpha : p.alpha * 0.8) * cintila
+        const lado = p.r * (p.tipo === 'neve' ? 3 : 4)
+        ctx.drawImage(sprites[p.tipo], p.x - lado / 2, p.y - lado / 2, lado, lado)
       }
       ctx.globalAlpha = 1
     }
@@ -76,33 +99,47 @@ export function Snowfall({ brilhos = false }: { brilhos?: boolean }) {
       canvas.width = w * dpr
       canvas.height = h * dpr
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      // No celular a barra de endereço muda só a altura; não recria a neve nesse caso
+      // No celular a barra de endereço muda só a altura; não recria as partículas nesse caso
       if (larguraMudou) {
-        const total = Math.round(Math.min(brilhos ? 45 : 120, (w * h) / (brilhos ? 22000 : 12000)))
-        flakes = Array.from({ length: total }, () => criar(false))
+        const total = Math.round(Math.min(festa ? 90 : 120, (w * h) / (festa ? 7000 : 12000)))
+        particulas = Array.from({ length: total }, () => criar(false))
       }
-      desenhar()
+      desenhar(0)
     }
 
     const animar = (t: number) => {
-      for (const f of flakes) {
-        f.y += f.vy
-        f.x += Math.sin(t / 1800 + f.phase) * 0.35
-        if (f.y > h + 10) Object.assign(f, criar(true))
+      for (const p of particulas) {
+        p.y += p.vy
+        p.x += Math.sin(t / 1800 + p.phase) * 0.4
+        if (p.y > h + 20) Object.assign(p, criar(true))
       }
       desenhar(t)
       raf = requestAnimationFrame(animar)
     }
 
+    const alternar = () => {
+      cancelAnimationFrame(raf)
+      if (!document.hidden && !reduce) raf = requestAnimationFrame(animar)
+    }
+
     redimensionar()
     window.addEventListener('resize', redimensionar)
-    if (!reduce) raf = requestAnimationFrame(animar)
+    document.addEventListener('visibilitychange', alternar)
+    alternar()
 
     return () => {
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', redimensionar)
+      document.removeEventListener('visibilitychange', alternar)
     }
-  }, [brilhos])
+  }, [festa])
 
-  return <canvas ref={ref} aria-hidden className="pointer-events-none fixed inset-0 z-0 size-full" />
+  // Em festa fica acima do cartão (z-20); senão, atrás dele
+  return (
+    <canvas
+      ref={ref}
+      aria-hidden
+      className={`pointer-events-none fixed inset-0 size-full ${festa ? 'z-20' : 'z-0'}`}
+    />
+  )
 }

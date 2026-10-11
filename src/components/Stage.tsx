@@ -2,6 +2,7 @@ import { domAnimation, LazyMotion, MotionConfig } from 'motion/react'
 import * as m from 'motion/react-m'
 import type { ReactNode } from 'react'
 import { siteConfig } from '../config'
+import { Luzes } from './Luzes'
 import { Snowfall } from './Snowfall'
 
 /** Fundo verde com brilhos e neve + cartão nude centralizado */
@@ -30,8 +31,14 @@ export function Stage({
             aria-hidden
             className="pointer-events-none absolute -right-40 top-1/3 size-[26rem] rounded-full bg-pine-600/30 blur-3xl"
           />
-          <Snowfall />
-          {brilhos && <Snowfall brilhos />}
+          {brilhos ? <><Luzes /><Snowfall festa /></> : <Snowfall />}
+
+          {brilhos && (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(ellipse_70%_100%_at_50%_0%,rgba(255,70,80,0.16),transparent_70%)] animate-[pulso-luz_5s_ease-in-out_infinite]"
+            />
+          )}
 
           <main className="relative z-10 mx-auto flex min-h-dvh w-full max-w-xl flex-col items-center justify-center px-4 py-10 sm:py-16">
             <m.article
