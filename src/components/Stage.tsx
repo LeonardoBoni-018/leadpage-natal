@@ -25,11 +25,11 @@ export function Stage({
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute -bottom-40 -left-32 size-[28rem] rounded-full bg-berry-700/25 blur-3xl"
+            className="pointer-events-none absolute -bottom-40 -left-32 size-[28rem] rounded-full bg-[radial-gradient(circle,rgba(142,27,36,0.3),transparent_68%)]"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute -right-40 top-1/3 size-[26rem] rounded-full bg-pine-600/30 blur-3xl"
+            className="pointer-events-none absolute -right-40 top-1/3 size-[26rem] rounded-full bg-[radial-gradient(circle,rgba(47,107,71,0.35),transparent_68%)]"
           />
           {brilhos ? <><Luzes /><Snowfall festa /></> : <Snowfall />}
 
