@@ -93,7 +93,7 @@ export function Snowfall({ festa = false }: { festa?: boolean }) {
 
     const redimensionar = () => {
       const larguraMudou = window.innerWidth !== w
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
       w = window.innerWidth
       h = window.innerHeight
       canvas.width = w * dpr
@@ -101,7 +101,7 @@ export function Snowfall({ festa = false }: { festa?: boolean }) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       // No celular a barra de endereço muda só a altura; não recria as partículas nesse caso
       if (larguraMudou) {
-        const total = Math.round(Math.min(festa ? 90 : 120, (w * h) / (festa ? 7000 : 12000)))
+        const total = Math.round(Math.min(festa ? 60 : 80, (w * h) / (festa ? 9000 : 14000)))
         particulas = Array.from({ length: total }, () => criar(false))
       }
       desenhar(0)
@@ -139,7 +139,7 @@ export function Snowfall({ festa = false }: { festa?: boolean }) {
     <canvas
       ref={ref}
       aria-hidden
-      className={`pointer-events-none fixed inset-0 size-full ${festa ? 'z-20' : 'z-0'}`}
+      className={`pointer-events-none fixed inset-0 size-full [transform:translateZ(0)] ${festa ? 'z-20' : 'z-0'}`}
     />
   )
 }

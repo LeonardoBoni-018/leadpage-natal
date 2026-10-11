@@ -23,7 +23,7 @@ export function Luzes() {
             left: `${b.x * 100}%`,
             top: `${b.y * 1.15}px`,
             backgroundColor: b.cor,
-            boxShadow: `0 0 10px 3px ${b.cor}aa, 0 0 22px 6px ${b.cor}55`,
+            boxShadow: `0 0 8px 2px ${b.cor}aa`,
             animationDelay: `${b.atraso}s`,
           }}
         />
