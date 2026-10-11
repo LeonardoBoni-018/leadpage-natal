@@ -22,12 +22,12 @@ export function ClientePage({ nome, driveUrl }: Entrega) {
       </m.p>
 
       <m.div variants={revelar}>
-        <Holly className="mx-auto mt-6 w-28 drop-shadow-[0_6px_10px_rgba(20,51,35,0.25)] sm:w-32" />
+        <Holly className="mx-auto mt-6 w-28 animate-[balanco_5s_ease-in-out_infinite] origin-top drop-shadow-[0_6px_10px_rgba(20,51,35,0.25)] sm:w-32" />
       </m.div>
 
       <m.h1 variants={revelar} className="mt-5">
         <span className="block font-display text-3xl italic text-pine-800 sm:text-4xl">Olá,</span>
-        <span className="mt-1 block text-balance px-2 pb-2 font-script text-[clamp(3.1rem,14vw,4.75rem)] leading-[1.05] text-berry-700">
+        <span className="mt-1 block text-balance px-2 pb-2 font-script text-[clamp(3.1rem,14vw,4.75rem)] leading-[1.05] text-berry-700 animate-[brilho-texto_3.5s_ease-in-out_infinite]">
           {nome}!
         </span>
       </m.h1>
