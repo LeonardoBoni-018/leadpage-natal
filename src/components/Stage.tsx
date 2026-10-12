@@ -72,6 +72,10 @@ export function Stage({
                 <p className="mt-1 tracking-wide">Feliz Natal e um próspero {siteConfig.ano + 1}</p>
               </m.footer>
             )}
+
+            <p className="mt-6 text-center text-xs tracking-wide text-nude-200/50">
+              © {siteConfig.ano} {siteConfig.autor}. Todos os direitos reservados.
+            </p>
           </main>
         </div>
       </MotionConfig>

@@ -1,7 +1,9 @@
 // Configurações gerais — ajuste com os dados reais do estúdio antes do deploy.
 export const siteConfig = {
-  /** Nome do estúdio/fotógrafa, usado na assinatura da página */
-  estudio: 'Estúdio Fotográfico',
+  /** Nome usado na assinatura da página ("Com carinho, ...") */
+  estudio: 'Guilherme e Sofia',
+  /** Titular dos direitos, usado no rodapé */
+  autor: 'Leonardo Boni',
   /** Ano do ensaio */
   ano: 2026,
   /** WhatsApp com DDI + DDD, só números (ex.: 5511999999999) — atual: +55 18 99820-7531 */
