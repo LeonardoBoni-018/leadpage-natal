@@ -1,7 +1,7 @@
 // Configurações gerais — ajuste com os dados reais do estúdio antes do deploy.
 export const siteConfig = {
   /** Nome usado na assinatura da página ("Com carinho, ...") */
-  estudio: 'Guilherme e Sofia',
+  estudio: 'Guilherme e Giovana',
   /** Titular dos direitos, usado no rodapé */
   autor: 'Leonardo Boni',
   /** Ano do ensaio */
